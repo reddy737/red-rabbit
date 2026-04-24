@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>💕 Will You Be Mine? 💕</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;900&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #ffe4f0, #ffd6e8, #fff0f5, #fce4ec);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Floating hearts */
+    .hbg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0
+    }
+
+    .hf {
+      position: absolute;
+      bottom: -60px;
+      animation: floatUp linear infinite;
+      opacity: .35
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) rotate(0deg) scale(1);
+        opacity: .35
+      }
+
+      100% {
+        transform: translateY(-110vh) rotate(360deg) scale(.6);
+        opacity: 0
+      }
+    }
+
+    /* Card */
+    .card {
+      position: relative;
+      z-index: 10;
+      background: rgba(255, 255, 255, .78);
+      backdrop-filter: blur(18px);
+      border: 2.5px solid rgba(255, 182, 210, .55);
+      border-radius: 2.5rem;
+      box-shadow: 0 8px 40px rgba(255, 100, 150, .2), 0 2px 8px rgba(255, 150, 180, .1);
+      padding: 2.6rem 2.2rem 2.2rem;
+      max-width: 500px;
+      width: 92vw;
+      text-align: center;
+      transition: transform .3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px)
+    }
+
+    .ribbon {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(90deg, #ff6fa3, #ff3d77, #ff6fa3);
+      color: #fff;
+      font-family: 'Fredoka One', cursive;
+      font-size: .85rem;
+      padding: 4px 22px;
+      border-radius: 9999px;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 10px rgba(255, 60, 120, .3);
+      white-space: nowrap;
+    }
+
+    /* Sticker image */
+    .sticker-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 1.4rem;
+      position: relative;
+    }
+
+    .sticker {
+      width: 190px;
+      height: 190px;
+      filter: drop-shadow(0 0 12px rgba(255, 120, 180, .35)) drop-shadow(0 0 2px #fff);
+      animation: stickerWiggle 3s ease-in-out infinite;
+      transition: filter .4s;
+    }
+
+    @keyframes stickerWiggle {
+
+      0%,
+      100% {
+        transform: rotate(-3deg) scale(1)
+      }
+
+      50% {
+        transform: rotate(3deg) scale(1.04)
+      }
+    }
+
+    .sticker.bounce {
+      animation: stickerBounce .5s cubic-bezier(.34, 1.56, .64, 1)
+    }
+
+    @keyframes stickerBounce {
+      0% {
+        transform: scale(1)
+      }
+
+      40% {
+        transform: scale(1.18) rotate(5deg)
+      }
+
+      70% {
+        transform: scale(.94) rotate(-3deg)
+      }
+
+      100% {
+        transform: scale(1)
+      }
+    }
+
+    .sparkle {
+      position: absolute;
+      font-size: 1.3rem;
+      pointer-events: none;
+      animation: sparklePop 1.8s ease-in-out infinite;
+    }
+
+    @keyframes sparklePop {
+
+      0%,
+      100% {
+        transform: scale(.8) rotate(-10deg);
+        opacity: .7
+      }
+
+      50% {
+        transform: scale(1.2) rotate(10deg);
+        opacity: 1
+      }
+    }
+
+    /* Heading */
+    .heading {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(1.4rem, 4.5vw, 2rem);
+      color: #d63384;
+      line-height: 1.3;
+      text-shadow: 0 2px 8px rgba(214, 51, 132, .12);
+      margin-bottom: .45rem;
+    }
+
+    .subtext {
+      font-size: .95rem;
+      color: #c2587a;
+      font-weight: 700;
+      margin-bottom: 1.3rem
+    }
+
+    /* Buttons */
+    .btn-row {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: .5rem
+    }
+
+    .btn {
+      font-family: 'Fredoka One', cursive;
+      border: none;
+      cursor: pointer;
+      border-radius: 9999px;
+      letter-spacing: .5px;
+      transition: transform .25s cubic-bezier(.34, 1.56, .64, 1), box-shadow .2s, font-size .4s, padding .4s;
+      outline: none;
+      user-select: none;
+      white-space: nowrap;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn:active {
+      transform: scale(.93) !important
+    }
+
+    /* Yes button — stays in card */
+    .btn-yes {
+      background: linear-gradient(135deg, #ff6fa3, #ff3d77);
+      color: #fff;
+      font-size: 1.25rem;
+      padding: .75rem 2.2rem;
+      box-shadow: 0 4px 18px rgba(255, 60, 120, .4), 0 1px 4px rgba(255, 60, 120, .18);
+    }
+
+    .btn-yes:hover {
+      transform: scale(1.08);
+      box-shadow: 0 8px 28px rgba(255, 60, 120, .48)
+    }
+
+    /* No button — stays in card initially */
+    .btn-no {
+      background: linear-gradient(135deg, #aaa, #888);
+      color: #fff;
+      font-size: 1.1rem;
+      padding: .65rem 1.8rem;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, .18);
+    }
+
+    .btn-no:hover {
+      transform: scale(1.04);
+      box-shadow: 0 8px 22px rgba(0, 0, 0, .22)
+    }
+
+    /* Runaway modifier for Yes button in final stage */
+    .btn-yes.runaway {
+      position: fixed;
+      transition: font-size .4s, padding .4s, left .18s cubic-bezier(.34, 1.56, .64, 1), top .18s cubic-bezier(.34, 1.56, .64, 1), transform .25s;
+      z-index: 9999;
+    }
+
+    /* Ripple */
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .45);
+      transform: scale(0);
+      animation: rippleAnim .55s linear;
+      pointer-events: none;
+    }
+
+    @keyframes rippleAnim {
+      to {
+        transform: scale(4);
+        opacity: 0
+      }
+    }
+
+    /* Animations */
+    .shake {
+      animation: shake .45s ease
+    }
+
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0)
+      }
+
+      18% {
+        transform: translateX(-7px) rotate(-2deg)
+      }
+
+      36% {
+        transform: translateX(7px) rotate(2deg)
+      }
+
+      54% {
+        transform: translateX(-4px) rotate(-1deg)
+      }
+
+      72% {
+        transform: translateX(4px) rotate(1deg)
+      }
+    }
+
+    .pulse {
+      display: inline-block;
+      animation: pulseAnim 1.4s ease-in-out infinite
+    }
+
+    @keyframes pulseAnim {
+
+      0%,
+      100% {
+        transform: scale(1)
+      }
+
+      50% {
+        transform: scale(1.22)
+      }
+    }
+
+    .hint {
+      margin-top: 1rem;
+      font-size: .82rem;
+      color: #d488a8;
+      font-weight: 700
+    }
+
+    .sticker svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Mobile Adaptations */
+    @media (max-width: 480px) {
+      .card {
+        padding: 2rem 1.2rem 1.5rem;
+        border-radius: 2rem;
+      }
+      .sticker {
+        width: 140px;
+        height: 140px;
+      }
+      .btn-yes {
+        font-size: 1.1rem;
+        padding: 0.6rem 1.6rem;
+      }
+      .btn-no {
+        font-size: 1rem;
+        padding: 0.5rem 1.4rem;
+      }
+      .heading {
+        font-size: 1.6rem;
+      }
+      .subtext {
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="hbg" id="hbg"></div>
+
+  <div class="card" id="card">
+    <div class="ribbon" id="ribbon">💕 A Special Message 💕</div>
+
+    <div class="sticker-wrap">
+      <span class="sparkle" style="top:-5px;left:18px;animation-delay:0s">✨</span>
+      <span class="sparkle" style="top:12px;right:12px;animation-delay:.7s">⭐</span>
+      <span class="sparkle" style="bottom:2px;left:10px;animation-delay:1.2s">✨</span>
+      <!-- SVG Sticker: Happy Bear -->
+      <svg id="sticker" class="sticker" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <!-- White sticker outline -->
+        <circle cx="100" cy="108" r="72" fill="white" stroke="white" stroke-width="12" />
+        <circle cx="68" cy="50" r="22" fill="white" stroke="white" stroke-width="12" />
+        <circle cx="132" cy="50" r="22" fill="white" stroke="white" stroke-width="12" />
+        <!-- Ears -->
+        <circle cx="68" cy="50" r="22" fill="#f4a460" />
+        <circle cx="68" cy="50" r="13" fill="#f9c88a" />
+        <circle cx="132" cy="50" r="22" fill="#f4a460" />
+        <circle cx="132" cy="50" r="13" fill="#f9c88a" />
+        <!-- Body/face -->
+        <circle cx="100" cy="108" r="72" fill="#f4a460" />
+        <!-- Muzzle -->
+        <ellipse cx="100" cy="128" rx="26" ry="18" fill="#f9c88a" />
+        <!-- Eyes -->
+        <ellipse cx="80" cy="96" rx="8" ry="9" fill="#222" />
+        <ellipse cx="120" cy="96" rx="8" ry="9" fill="#222" />
+        <!-- Eye shine -->
+        <circle cx="83" cy="93" r="3" fill="white" />
+        <circle cx="123" cy="93" r="3" fill="white" />
+        <!-- Smile -->
+        <path d="M88 130 Q100 142 112 130" stroke="#c97a3a" stroke-width="3" fill="none" stroke-linecap="round" />
+        <!-- Nose -->
+        <ellipse cx="100" cy="122" rx="6" ry="4" fill="#c97a3a" />
+        <!-- Blush -->
+        <ellipse cx="72" cy="112" rx="10" ry="6" fill="#ff9abe" opacity=".5" />
+        <ellipse cx="128" cy="112" rx="10" ry="6" fill="#ff9abe" opacity=".5" />
+        <!-- Heart -->
+        <path d="M95 78 C95 74 89 70 86 74 C83 70 77 74 77 78 C77 84 86 91 86 91 C86 91 95 84 95 78Z" fill="#ff6fa3"
+          transform="translate(7,-2)" />
+      </svg>
+    </div>
+
+    <div class="heading" id="heading">
+      Nevu naa Chelli ga untava lifelong ? <span class="pulse">💕</span>
+    </div>
+    <div class="subtext" id="subtext">Think carefully before you answer! 🐾</div>
+
+    <div class="btn-row" id="btnRow">
+      <button class="btn btn-yes" id="btnYes" onclick="handleYes(this,event)">Yes! 💖</button>
+      <button class="btn btn-no" id="btnNo" onclick="handleNo(this,event)">No 😔</button>
+    </div>
+
+    <div class="hint" id="hint">psst… the button knows what you really feel 🥺</div>
+  </div>
+
+  <script>
+    /* ── Floating hearts ── */
+    (function () {
+      const c = document.getElementById('hbg');
+      const e = ['💗', '💖', '💓', '💝', '🌸', '🌺', '✨', '💞', '💘', '🌷'];
+      function add() {
+        const h = document.createElement('span');
+        h.className = 'hf';
+        h.textContent = e[Math.floor(Math.random() * e.length)];
+        h.style.left = Math.random() * 100 + 'vw';
+        const d = 7 + Math.random() * 8;
+        h.style.animationDuration = d + 's';
+        h.style.fontSize = (1 + Math.random() * 1.4) + 'rem';
+        h.style.animationDelay = Math.random() * 3 + 's';
+        c.appendChild(h);
+        setTimeout(() => h.remove(), (d + 4) * 1000);
+      }
+      for (let i = 0; i < 14; i++) setTimeout(add, i * 400);
+      setInterval(add, 900);
+    })();
+
+    /* ── Ripple ── */
+    function addRipple(btn, e) {
+      const r = btn.getBoundingClientRect();
+      const s = document.createElement('span');
+      s.className = 'ripple';
+      const sz = Math.max(r.width, r.height);
+      s.style.width = s.style.height = sz + 'px';
+      s.style.left = (e.clientX - r.left - sz / 2) + 'px';
+      s.style.top = (e.clientY - r.top - sz / 2) + 'px';
+      btn.appendChild(s);
+      setTimeout(() => s.remove(), 600);
+    }
+
+    /* ── Yes button runaway logic (activates later) ── */
+    const btnYes = document.getElementById('btnYes');
+    let yesX = 0, yesY = 0;
+    let yesAngle = Math.random() * Math.PI * 2; // Initial random angle
+
+    function placeYesRandom() {
+      const w = btnYes.offsetWidth || 120, h = btnYes.offsetHeight || 50;
+
+      // Constrain movement to a wider area on mobile
+      const areaRatio = window.innerWidth < 480 ? 0.85 : 0.5;
+      const boxWidth = window.innerWidth * areaRatio;
+      const boxHeight = window.innerHeight * areaRatio;
+
+      // Calculate starting X and Y for the center box
+      const minX = (window.innerWidth - boxWidth) / 2;
+      const minY = (window.innerHeight - boxHeight) / 2;
+
+      // Pick random coordinates inside this center box
+      let yesX = minX + Math.random() * (boxWidth - w);
+      let yesY = minY + Math.random() * (boxHeight - h);
+
+      // Safety clamp
+      yesX = Math.max(10, Math.min(yesX, window.innerWidth - w - 10));
+      yesY = Math.max(10, Math.min(yesY, window.innerHeight - h - 10));
+
+      btnYes.style.left = yesX + 'px';
+      btnYes.style.top = yesY + 'px';
+    }
+
+    function triggerRunaway() {
+      if (!btnYes.classList.contains('runaway')) {
+        const rect = btnYes.getBoundingClientRect();
+        btnYes.classList.add('runaway');
+        btnYes.style.left = rect.left + 'px';
+        btnYes.style.top = rect.top + 'px';
+      }
+      placeYesRandom();
+    }
+
+    /* Proximity escape on mousemove (only if runaway mode active) */
+    document.addEventListener('mousemove', function (e) {
+      if (yesClicks < 4) return; // Wait until final stage
+      const r = btnYes.getBoundingClientRect();
+      const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
+      if (dist < 120) triggerRunaway();
+    });
+    /* Touch escape */
+    document.addEventListener('touchmove', function (e) {
+      if (yesClicks < 4) return;
+      const t = e.touches[0];
+      const r = btnYes.getBoundingClientRect();
+      const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      const escapeDist = window.innerWidth < 480 ? 90 : 140;
+      if (Math.hypot(t.clientX - cx, t.clientY - cy) < escapeDist) triggerRunaway();
+    }, { passive: true });
+
+    /* ── State ── */
+    let yesClicks = 0, noSize = 1.1, yesSize = 1.25;
+    const NO_GROW = 0.3, YES_SHRINK = 0.06;
+
+    const pleas = [
+      'Are you sure? 🥺', 'Really though? 😢', 'Think again! 🙈',
+      'Pleeaaaase? 🐾', "You're breaking my heart! 💔",
+      "I'll cry… 😭", 'One more chance? 🌸', 'Pretty pleeease? 🥹',
+      'I made snacks! 🍰', "FINE… I'll be sad forever 😿"
+    ];
+
+    const subs = [
+      'Are you absolutely sure? 🙈', 'Your heart says otherwise! 💓',
+      'I believe in you! 🌸', "Don't give up on us! 🥺",
+      "One day you'll say yes 💕", "I'll wait forever… 🐾",
+      'Still here btw 👀', 'That Yes button is trying to escape! 😅',
+      'Okay I see you 😤', 'Last chance! For real this time!'
+    ];
+
+    /* SVGs for different states */
+    const svgSad = `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="100" cy="108" r="72" fill="white" stroke="white" stroke-width="12"/>
+  <circle cx="68" cy="50" r="22" fill="white" stroke="white" stroke-width="12"/>
+  <circle cx="132" cy="50" r="22" fill="white" stroke="white" stroke-width="12"/>
+  <circle cx="68" cy="50" r="22" fill="#f4a460"/>
+  <circle cx="68" cy="50" r="13" fill="#f9c88a"/>
+  <circle cx="132" cy="50" r="22" fill="#f4a460"/>
+  <circle cx="132" cy="50" r="13" fill="#f9c88a"/>
+  <circle cx="100" cy="108" r="72" fill="#f4a460"/>
+  <ellipse cx="100" cy="130" rx="26" ry="18" fill="#f9c88a"/>
+  <!-- Sad eyes -->
+  <path d="M72 90 Q80 84 88 90" stroke="#222" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <path d="M112 90 Q120 84 128 90" stroke="#222" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <ellipse cx="80" cy="96" rx="5" ry="6" fill="#222"/>
+  <ellipse cx="120" cy="96" rx="5" ry="6" fill="#222"/>
+  <circle cx="82" cy="94" r="2" fill="white"/>
+  <circle cx="122" cy="94" r="2" fill="white"/>
+  <!-- Sad mouth -->
+  <path d="M88 136 Q100 128 112 136" stroke="#c97a3a" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <ellipse cx="100" cy="124" rx="6" ry="4" fill="#c97a3a"/>
+  <ellipse cx="72" cy="114" rx="10" ry="6" fill="#ff9abe" opacity=".5"/>
+  <ellipse cx="128" cy="114" rx="10" ry="6" fill="#ff9abe" opacity=".5"/>
+  <!-- Tears -->
+  <ellipse cx="76" cy="108" rx="4" ry="6" fill="#7ec8e3" opacity=".7"/>
+  <ellipse cx="124" cy="108" rx="4" ry="6" fill="#7ec8e3" opacity=".7"/>
+</svg>`;
+
+    const svgHappy = `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="100" cy="108" r="72" fill="white" stroke="white" stroke-width="12"/>
+  <circle cx="68" cy="50" r="22" fill="white" stroke="white" stroke-width="12"/>
+  <circle cx="132" cy="50" r="22" fill="white" stroke="white" stroke-width="12"/>
+  <circle cx="68" cy="50" r="22" fill="#f4a460"/>
+  <circle cx="68" cy="50" r="13" fill="#f9c88a"/>
+  <circle cx="132" cy="50" r="22" fill="#f4a460"/>
+  <circle cx="132" cy="50" r="13" fill="#f9c88a"/>
+  <circle cx="100" cy="108" r="72" fill="#f4a460"/>
+  <ellipse cx="100" cy="126" rx="26" ry="18" fill="#f9c88a"/>
+  <!-- Heart eyes -->
+  <path d="M72 94 C72 89 65 85 62 89 C59 85 52 89 52 94 C52 101 62 108 62 108 C62 108 72 101 72 94Z" fill="#ff3d77"/>
+  <path d="M148 94 C148 89 141 85 138 89 C135 85 128 89 128 94 C128 101 138 108 138 108 C138 108 148 101 148 94Z" fill="#ff3d77"/>
+  <!-- Big smile -->
+  <path d="M82 126 Q100 146 118 126" stroke="#c97a3a" stroke-width="3.5" fill="#f9c88a" stroke-linecap="round"/>
+  <ellipse cx="100" cy="118" rx="6" ry="4" fill="#c97a3a"/>
+  <ellipse cx="72" cy="112" rx="10" ry="6" fill="#ff9abe" opacity=".6"/>
+  <ellipse cx="128" cy="112" rx="10" ry="6" fill="#ff9abe" opacity=".6"/>
+  <!-- Stars -->
+  <text x="24" y="80" font-size="22">⭐</text>
+  <text x="150" y="76" font-size="22">✨</text>
+  <text x="90" y="34" font-size="18">💕</text>
+</svg>`;
+
+    function setStickerSad() {
+      document.getElementById('sticker').outerHTML = '<div id="sticker" class="sticker">' + svgSad + '</div>';
+    }
+    function setStickerHappy() {
+      const wrap = document.querySelector('.sticker-wrap');
+      const old = document.getElementById('sticker');
+      const div = document.createElement('div');
+      div.id = 'sticker'; div.className = 'sticker';
+      div.innerHTML = svgHappy;
+      old.replaceWith(div);
+    }
+
+    function bounceSticker() {
+      const s = document.getElementById('sticker');
+      if (!s) return;
+      s.classList.remove('bounce');
+      void s.offsetWidth;
+      s.classList.add('bounce');
+      setTimeout(() => s.classList.remove('bounce'), 600);
+    }
+
+    /* ── No: success only if Yes has run away ── */
+    function handleNo(btn, e) {
+      addRipple(btn, e);
+
+      // Only accept No at the end
+      if (yesClicks < 5) {
+        const card = document.getElementById('card');
+        card.classList.remove('shake');
+        void card.offsetWidth;
+        card.classList.add('shake');
+        document.getElementById('hint').textContent = 'psst… you have to click Yes first! 🥺';
+        return;
+      }
+
+      showSuccess();
+    }
+
+    /* ── Yes: shows pleas, shrinks Yes, grows No. After 4 clicks, it runs away ── */
+    function handleYes(btn, e) {
+      addRipple(btn, e);
+      yesClicks++;
+
+      // If it's the 5th click (final stage), detach it and make it run away
+      if (yesClicks === 5) {
+        if (!btnYes.classList.contains('runaway')) {
+          const rect = btn.getBoundingClientRect();
+          btnYes.classList.add('runaway');
+          btnYes.style.left = rect.left + 'px';
+          btnYes.style.top = rect.top + 'px';
+        }
+        setTimeout(placeYesRandom, 100);
+      }
+
+      const pi = Math.min(yesClicks - 1, pleas.length - 1);
+      btn.textContent = pleas[pi];
+
+      // Grow No, shrink Yes
+      if (yesClicks < 5) {
+        const maxNoSize = window.innerWidth < 480 ? 2.2 : 3.8;
+        noSize = Math.min(noSize + NO_GROW, maxNoSize);
+        yesSize = Math.max(yesSize - YES_SHRINK, 0.65);
+
+        const no = document.getElementById('btnNo');
+        no.style.fontSize = noSize + 'rem';
+        no.style.padding = `${.5 + noSize * .18}rem ${.8 + noSize * .38}rem`;
+
+        btn.style.fontSize = yesSize + 'rem';
+        btn.style.padding = `${.3 + yesSize * .15}rem ${.6 + yesSize * .25}rem`;
+      }
+
+      if (yesClicks === 3) setStickerSad();
+      bounceSticker();
+
+      const card = document.getElementById('card');
+      card.classList.remove('shake');
+      void card.offsetWidth;
+      card.classList.add('shake');
+      setTimeout(() => card.classList.remove('shake'), 500);
+
+      document.getElementById('subtext').textContent = subs[Math.min(yesClicks - 1, subs.length - 1)];
+      document.getElementById('hint').textContent =
+        yesClicks >= 4 ? '👀 That Yes button is trying to escape…' : 'psst… the button knows what you really feel 🥺';
+
+      // Teleport if already running away
+      if (yesClicks > 4) {
+        setTimeout(placeYesRandom, 80);
+      }
+    }
+
+    /* ── Success ── */
+    function showSuccess() {
+      document.getElementById('ribbon').textContent = '🎉 YAY!! 🎉';
+      setStickerHappy();
+
+      document.getElementById('heading').innerHTML =
+        'Yay! Every No is a Yes from inside <span class="pulse">❤️</span>';
+      document.getElementById('subtext').textContent = 'I knew it all along! 🌸💕';
+      document.getElementById('hint').innerHTML = '💌 You just made my whole world brighter! 🌟';
+
+      // Keep the No button visible but change it to a success state
+      const noBtn = document.getElementById('btnNo');
+      if (noBtn) {
+        noBtn.innerHTML = '🥰 Te Amo Muchisimo🥰';
+        noBtn.style.background = 'linear-gradient(135deg,#ff6fa3,#ff3d77)';
+        noBtn.style.fontSize = '1.3rem';
+        noBtn.style.padding = '0.8rem 2rem';
+        noBtn.style.pointerEvents = 'none'; // Lock the button
+        noBtn.style.animation = 'pulseAnim 1.4s ease-in-out infinite';
+      }
+
+      // Hide the runaway Yes button if it's active
+      btnYes.style.display = 'none';
+
+      const card = document.getElementById('card');
+      card.style.border = '3px solid rgba(255,60,120,.5)';
+      card.style.boxShadow = '0 0 70px rgba(255,60,120,.38),0 8px 32px rgba(255,100,150,.25)';
+
+      launchConfetti();
+    }
+
+    function launchConfetti() {
+      const colors = ['#ff6fa3', '#ff3d77', '#ffb3cc', '#ff85b3', '#ffd6e8', '#ff1493', '#ffcce5'];
+      confetti({ particleCount: 180, spread: 90, origin: { y: .5 }, colors, scalar: 1.2, shapes: ['circle', 'square'] });
+      setTimeout(() => {
+        confetti({ particleCount: 80, angle: 60, spread: 55, origin: { x: 0, y: .6 }, colors });
+        confetti({ particleCount: 80, angle: 120, spread: 55, origin: { x: 1, y: .6 }, colors });
+      }, 250);
+      let n = 0;
+      const iv = setInterval(() => {
+        confetti({ particleCount: 18, spread: 60, origin: { x: Math.random(), y: .2 }, colors, scalar: .9 });
+        if (++n > 16) clearInterval(iv);
+      }, 220);
+    }
+  </script>
+</body>
+
+</html>
